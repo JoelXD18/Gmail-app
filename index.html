@@ -1,1 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- iPhone config -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Gmail">
+
+<!-- Icono dinámico -->
+<link rel="apple-touch-icon" id="appIcon" href="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico">
+
+<title>Gmail</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: black;
+  overflow: hidden;
+}
+
+/* Imagen fullscreen */
+#mainImage {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+}
+
+/* Modal */
+#modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+#modal.active {
+  display: flex;
+}
+
+#modal button {
+  margin-top: 20px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background: white;
+  color: black;
+  font-weight: bold;
+}
+
+input[type="file"] {
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- TU IMAGEN -->
+<img id="mainImage" src="IMG_5144.jpeg">
+
+<!-- Modal -->
+<div id="modal">
+  <h2>Selecciona un logo</h2>
+  <p>Este será el icono de la app</p>
+  <button onclick="pickImage()">Elegir desde galería</button>
+  <input type="file" id="fileInput" accept="image/*">
+
+  <p style="margin-top:30px; font-size:14px; opacity:0.7;">
+    ⚠️ Después elimina la app y vuelve a añadirla<br>
+    para aplicar el nuevo icono
+  </p>
+</div>
+
+<script>
+const modal = document.getElementById("modal");
+const fileInput = document.getElementById("fileInput");
+const icon = document.getElementById("appIcon");
+const img = document.getElementById("mainImage");
+
+/* Cargar logo guardado */
+window.onload = () => {
+  const savedIcon = localStorage.getItem("customIcon");
+  if (savedIcon) {
+    icon.href = savedIcon;
+  }
+};
+
+/* Abrir modal */
+img.addEventListener("click", () => {
+  modal.classList.add("active");
+});
+
+/* Elegir imagen */
+function pickImage() {
+  fileInput.click();
+}
+
+fileInput.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const base64 = event.target.result;
+
+    // Guardar
+    localStorage.setItem("customIcon", base64);
+
+    // Aplicar
+    icon.href = base64;
+
+    // Cerrar modal
+    modal.classList.remove("active");
+
+    alert("✅ Logo guardado\n\nAhora elimina la app y vuelve a añadirla para ver el cambio");
+  };
+
+  reader.readAsDataURL(file);
+});
+
+/* Cerrar tocando fuera */
+modal.addEventListener("click", (e) => {
+  if (e.target === modal) {
+    modal.classList.remove("active");
+  }
+});
+</script>
+
+</body>
+</html>
